@@ -1,0 +1,21 @@
+#!/bin/bash
+
+COLOR_RESET=$(echo -e "\033[0m")
+
+COLOR_FG_DEFAULT=$(echo -e "\033[38m")
+COLOR_FG_BLACK=$(echo -e "\033[38m")
+COLOR_FG_RED=$(echo -e "\033[31m")
+COLOR_FG_GREEN=$(echo -e "\033[32m")
+COLOR_FG_YELLOW=$(echo -e "\033[33m")
+COLOR_FG_BLUE=$(echo -e "\033[34m")
+COLOR_FG_MAGENTA=$(echo -e "\033[35m")
+COLOR_FG_GRAY=$(echo -e "\033[37m")
+
+COLOR_BG_DEFAULT=$(echo -e "\033[48m")
+COLOR_BG_BLACK=$(echo -e "\033[40m")
+COLOR_BG_RED=$(echo -e "\033[41m")
+COLOR_BG_GREEN=$(echo -e "\033[42m")
+COLOR_BG_YELLOW=$(echo -e "\033[43m")
+COLOR_BG_BLUE=$(echo -e "\033[44m")
+COLOR_BG_MAGENTA=$(echo -e "\033[45m")
+COLOR_BG_GRAY=$(echo -e "\033[47m")

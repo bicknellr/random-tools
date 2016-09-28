@@ -1,0 +1,43 @@
+#!/bin/bash
+
+source $(dirname $0)/import_colors
+
+function fn_gitinfo {
+  local DIR=$1
+  cd $DIR
+    if [ -d .git ]
+    then
+      git -c color.ui=always branch \
+        | grep -e "^* " \
+        | sed -e "s/^* /"$COLOR_FG_GRAY"branch:"$COLOR_RESET" /g"
+      git -c color.ui=always status -s
+      git -c color.ui=always log --graph --oneline --color --decorate | head -n 3
+    fi
+  cd ../../
+}
+
+function fn_main {
+  if [ ! -d bower_components ]
+  then
+    echo $COLOR_FG_RED"'bower_components/' not found."$COLOR_RESET
+    return 1
+  fi
+
+  for name in $(ls bower_components)
+  do
+    if [ -h bower_components/$name ]
+    then
+      local LINK_DESTINATION=$(readlink $(readlink bower_components/$name))
+      echo $COLOR_FG_MAGENTA""$name""$COLOR_RESET" -> "$LINK_DESTINATION
+
+      fn_gitinfo bower_components/$name | sed -e "s/^/  /g"
+    elif [ -d bower_components/$name ]
+    then
+      echo $COLOR_FG_BLUE""$name""$COLOR_RESET
+    fi
+  done
+
+  return 0
+}
+
+fn_main

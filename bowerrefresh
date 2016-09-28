@@ -1,0 +1,53 @@
+#!/bin/bash
+
+source $(dirname $0)/import_colors
+
+function fn_main {
+  FLAG_all=""
+
+  # Read arguments.
+  for arg in $@; do
+    case $arg in
+      --all)
+        echo "${COLOR_FG_BLACK}${COLOR_BG_RED}Removing all links...${COLOR_RESET}"
+        FLAG_all=1
+      ;;
+    esac
+  done
+
+
+  # Check for expected files.
+  if [ ! -f bower.json ]; then
+    echo "${COLOR_FG_RED}'bower.json' not found.${COLOR_RESET}"
+    return 1
+  fi
+
+  if [ ! -d bower_components/ ]; then
+    echo "${COLOR_FG_RED}'bower_components/' not found.${COLOR_RESET}"
+    return 1
+  fi
+
+
+  # Update bower components
+  for component_dir in ./bower_components/*; do
+    component_name=$(basename $component_dir)
+
+    if [ ! $FLAG_all ]; then
+      # Keep symbolic links ('bower link ...').
+      if [ -h $component_dir ]; then
+        echo "${COLOR_FG_GREEN} KEEPING${COLOR_RESET} ${component_name}"
+        continue
+      fi
+    fi
+
+    echo "${COLOR_FG_RED}REMOVING${COLOR_RESET} ${component_name}"
+    rm -r ./bower_components/$(basename $component_dir)
+  done
+
+
+  # Run normal installation.
+  bower install
+  return $?
+}
+
+fn_main $@
