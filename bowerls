@@ -2,38 +2,47 @@
 
 source $(dirname $0)/import_colors
 
+BOWER_PATH=./bower_components
+
 function fn_gitinfo {
   local DIR=$1
-  cd $DIR
+
+  pushd $DIR > /dev/null
     if [ -d .git ]
     then
       git -c color.ui=always branch \
         | grep -e "^* " \
-        | sed -e "s/^* /"$COLOR_FG_GRAY"branch:"$COLOR_RESET" /g"
+        | sed -e "s/^* /${COLOR_FG_GRAY}branch:${COLOR_RESET} /g"
       git -c color.ui=always status -s
       git -c color.ui=always log --graph --oneline --color --decorate | head -n 3
     fi
-  cd ../../
+  popd > /dev/null
 }
 
 function fn_main {
-  if [ ! -d bower_components ]
+  if [ ! -d $BOWER_PATH ]
   then
-    echo $COLOR_FG_RED"'bower_components/' not found."$COLOR_RESET
+    echo "${COLOR_FG_RED}'${BOWER_PATH}' not found.${COLOR_RESET}"
     return 1
   fi
 
-  for name in $(ls bower_components)
+  for name in $(ls $BOWER_PATH)
   do
-    if [ -h bower_components/$name ]
+    local ITEM_PATH=$BOWER_PATH/$name
+    if [ -h $ITEM_PATH ]
     then
-      local LINK_DESTINATION=$(readlink $(readlink bower_components/$name))
-      echo $COLOR_FG_MAGENTA""$name""$COLOR_RESET" -> "$LINK_DESTINATION
+      local LINK_DESTINATION=$ITEM_PATH
+      while [ -h $LINK_DESTINATION ]
+      do
+        LINK_DESTINATION=$(readlink $LINK_DESTINATION)
+      done
 
-      fn_gitinfo bower_components/$name | sed -e "s/^/  /g"
-    elif [ -d bower_components/$name ]
+      echo "${COLOR_FG_MAGENTA}${name}${COLOR_RESET} -> ${LINK_DESTINATION}"
+
+      fn_gitinfo $ITEM_PATH | sed -e "s/^/  /g"
+    elif [ -d $ITEM_PATH ]
     then
-      echo $COLOR_FG_BLUE""$name""$COLOR_RESET
+      echo "${COLOR_FG_BLUE}${name}${COLOR_RESET}"
     fi
   done
 
